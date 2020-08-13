@@ -3,8 +3,8 @@
 import { IBaseModel } from '../generic/generic.interface';
 
 export enum TaskType {
-  BuildForce,
-  OperativeForce,
+  BuildForce = 'BuildForce',
+  OperativeForce = 'OperativeForce',
 }
 
 export interface ITask extends IBaseModel {

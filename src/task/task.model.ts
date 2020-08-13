@@ -7,7 +7,6 @@ import { TaskValidator } from './task.validator';
 const taskSchema = new Schema({
   parent: {
     type: String,
-    required: true,
     default: null,
     validate: {
       isAsync: true,
@@ -18,12 +17,12 @@ const taskSchema = new Schema({
   type: {
     type: String,
     required: true,
-    enum: [Object.keys(TaskType).filter(key => typeof TaskType[key as any] === 'number')
-                                .map(key => TaskType[key as any])],
+    enum: Object.keys(TaskType),
   },
   name: {
     type: String,
     required: true,
+    unique: true,
     validate: [TaskValidator.isNameValid, 'Invalid task name given.'],
   },
   description: {
@@ -38,7 +37,6 @@ const taskSchema = new Schema({
   },
   ancestors: {
     type: [String],
-    required: true,
     default: [],
     validate: {
       isAsync: true,
@@ -50,7 +48,6 @@ const taskSchema = new Schema({
 
 taskSchema.methods.toJSON = function () {
   const obj = this.toObject();
-  delete obj._id;
   delete obj.__v;
   return obj;
 };

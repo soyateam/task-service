@@ -1,6 +1,6 @@
 // task.validator
 
-import { ITask } from './task.interface';
+import { ITask, TaskType } from './task.interface';
 import { InvalidTaskName, InvalidTaskDescription } from './task.error';
 import taskModel from './task.model';
 
@@ -11,7 +11,7 @@ export class TaskValidator {
       task &&
       task.name &&
       task.description &&
-      task.parent
+      task.type
     );
   }
 
@@ -31,10 +31,20 @@ export class TaskValidator {
     throw new InvalidTaskDescription();
   }
 
-  static async isParentValid(parent: string) {
-    const parentFromDB = await taskModel.findOne({ _id: parent }).lean();
+  static isTypeValid(type: string) {
+    return (Object.keys(TaskType).indexOf(type) !== -1);
+  }
 
-    return !!parentFromDB;
+  static async isParentValid(parent: string) {
+    // In case the task is root task
+    let valid = true;
+
+    // If not, it must be sub task of already created task
+    if (!!parent) {
+      valid = !!(await taskModel.findOne({ _id: parent }).lean());
+    }
+
+    return valid;
   }
 
   static async isAncestorsValid(ancestors: [string]) {
@@ -42,4 +52,5 @@ export class TaskValidator {
 
     return ancestorsFromDB.length === ancestors.length;
   }
+
 }

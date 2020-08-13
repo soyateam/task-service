@@ -8,8 +8,8 @@ const config = {
   /* Routes Configuration */
 
   // Task Routes
-  TASK_ENDPOINT: '/task',
-  TASK_PARENT_ENDPOINT: '/parent',
+  TASK_ENDPOINT: 'task',
+  TASK_PARENT_ENDPOINT: 'parent',
 
 };
 

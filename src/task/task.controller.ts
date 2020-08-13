@@ -1,7 +1,7 @@
 // task.controller
 
 import { TaskRepository } from './task.repository';
-import { ITask } from './task.interface';
+import { ITask, TaskType } from './task.interface';
 import { InvalidParentTask } from './task.error';
 
 export class TaskController {
@@ -23,15 +23,35 @@ export class TaskController {
         // Attach the ancestors from the parent task to the ancestors of the sub task
         taskProperties.ancestors = [parentTask._id, ...parentTask.ancestors];
 
+        // Force type of the task to be as the parent's type
+        taskProperties.type = parentTask.type;
+
         // Create the task
         return await this.taskRepository.create(taskProperties);
       }
 
+      // If the task parent value is invalid, throw an error
+      throw new InvalidParentTask();
     }
 
-    // If the task parent value is invalid, throw an error
-    throw new InvalidParentTask();
+    // Root task case
+    return await this.taskRepository.create(taskProperties);
+  }
 
+  /**
+   * Update a task by given properites.
+   * @param taskProperties - Task properites to update
+   */
+  static async updateTask(taskProperties: Partial<ITask>) {
+    return await this.taskRepository.update(taskProperties);
+  }
+
+  /**
+   * Get root parent tasks by task type
+   * @param type - Task type.
+   */
+  static async getParentTasksByType(type: TaskType) {
+    return await this.taskRepository.getParentsByType(type);
   }
 
   /**

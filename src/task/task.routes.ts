@@ -6,6 +6,7 @@ import { Wrapper } from '../utils/wrapper';
 import { TaskController } from './task.controller';
 import config from '../config';
 import { TaskValidator } from './task.validator';
+import { TaskType } from './task.interface';
 
 export class TaskRouter {
 
@@ -15,27 +16,39 @@ export class TaskRouter {
     MISSING_PARENT_ID: 'Parent id of the tasks is missing',
     TASK_NOT_FOUND: 'Task not found',
     TASKS_NOT_FOUND: 'Tasks not found',
+    INVALID_TASK_TYPE: 'Invalid task type given (missing or incorrect)',
+    INVALID_TASK_PROPERTIES: 'Invalid task properties given',
   };
 
   public static getRouter() {
 
     TaskRouter.router.get(
-      `${config.TASK_ENDPOINT}${config.TASK_PARENT_ENDPOINT}/:parentId`,
+      `/${config.TASK_PARENT_ENDPOINT}/:parentId`,
       Wrapper.wrapAsync(TaskRouter.getTasksByParentId),
     );
 
     TaskRouter.router.get(
-      `${config.TASK_ENDPOINT}/:taskId`,
+      '/:taskId',
       Wrapper.wrapAsync(TaskRouter.getTaskById),
     );
 
+    TaskRouter.router.get(
+      '/',
+      Wrapper.wrapAsync(TaskRouter.getParentTasksByType),
+    );
+
+    TaskRouter.router.put(
+      '/',
+      Wrapper.wrapAsync(TaskRouter.updateTask),
+    );
+
     TaskRouter.router.post(
-      `${config.TASK_ENDPOINT}`,
+      '/',
       Wrapper.wrapAsync(TaskRouter.createTask),
     );
 
     TaskRouter.router.delete(
-      `${config.TASK_ENDPOINT}/:taskId`,
+      '/',
       Wrapper.wrapAsync(TaskRouter.deleteTaskById),
     );
 
@@ -63,6 +76,32 @@ export class TaskRouter {
     }
 
     throw new InvalidParameter(TaskRouter.errorMessages.MISSING_TASK_ID);
+  }
+
+  /**
+   * Get root parent tasks of a type.
+   * @param req - Express Request Object.
+   * @param res - Express Response Object.
+   */
+  private static async getParentTasksByType(req: Request, res: Response) {
+    const type = req.query.type as string;
+
+    // If the type given is valid
+    if (type && TaskValidator.isTypeValid(type)) {
+
+      const tasks = await TaskController.getParentTasksByType(type as TaskType);
+
+      // If tasks found
+      if (tasks && tasks.length > 0) {
+        return res.status(200).send(tasks);
+      }
+
+      // Tasks not found error
+      throw new NotFound(TaskRouter.errorMessages.TASKS_NOT_FOUND);
+    }
+
+    // Invalid task type given, throw error
+    throw new InvalidParameter(TaskRouter.errorMessages.INVALID_TASK_TYPE);
   }
 
   /**
@@ -108,6 +147,35 @@ export class TaskRouter {
       }
 
     }
+
+    throw new InvalidParameter(TaskRouter.errorMessages.INVALID_TASK_PROPERTIES);
+  }
+
+  /**
+   * Update a task.
+   * @param req - Express Request Object.
+   * @param res - Express Response Object.
+   */
+  private static async updateTask(req: Request, res: Response) {
+    const taskProperties = req.body.task;
+
+    // If task properties to update is given
+    if (taskProperties) {
+
+      // Update the task with the given properites
+      const updatedTask = await TaskController.updateTask(taskProperties);
+
+      // If task is exists and updated
+      if (updatedTask) {
+        return res.status(200).send(updatedTask);
+      }
+
+      // Task for update was not found
+      throw new NotFound(TaskRouter.errorMessages.TASK_NOT_FOUND);
+    }
+
+    // Bad task properites given
+    throw new InvalidParameter(TaskRouter.errorMessages.INVALID_TASK_PROPERTIES);
   }
 
   /**

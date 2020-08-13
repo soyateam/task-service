@@ -1,6 +1,7 @@
 // error.handler
 
 import { Request, Response, NextFunction } from 'express';
+import { MongooseErrorHandler } from './error.handler.mongoose';
 import { BaseError } from './error';
 
 // TODO: Error type correction
@@ -8,6 +9,12 @@ export function errorHandler(error: any, req: Request, res: Response, next: Next
 
   if (error instanceof BaseError) {
     return res.status(error.status).send({ message: error.message });
+  }
+
+  if (MongooseErrorHandler.instanceOf(error)) {
+    const parsedError = MongooseErrorHandler.parseError(error);
+
+    return res.status(parsedError.status).send({ message: parsedError.message });
   }
 
   // Other errors
