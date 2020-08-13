@@ -1,0 +1,15 @@
+version: "3.5"
+services:
+  task-service:
+    container_name: task-service
+    image: task-service:latest
+    ports:
+      - "3000:3000"
+    build: .
+    volumes:
+      - ./logs:/usr/src/app/logs
+    depends_on:
+      - mongo
+    restart: always
+  mongo:
+    image: mongo:latest
