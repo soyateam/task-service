@@ -15,7 +15,7 @@ export class TaskRepository extends GenericRepository<typeof taskModel> {
    * @param parentId - ObjectID of the parent task.
    */
   public getByParentId(parentId: string) {
-    return this.model.find({ parent: parentId });
+    return this.model.find({ parent: parentId === 'null' ? null : parentId });
   }
 
   /**

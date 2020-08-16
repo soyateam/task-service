@@ -14,8 +14,6 @@ export interface ITask extends IBaseModel {
   description: string; // Description of the task
   orgIds: string[]; // Organization ids (in Kartoffel format) attached to task
   ancestors: string[]; // Ancestors of the tasks (the parent tasks above this task level)
-
-  // TODO: Add ancestors
 }
 
 export const collectionName = 'Task';

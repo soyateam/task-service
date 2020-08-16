@@ -48,7 +48,7 @@ export class TaskRouter {
     );
 
     TaskRouter.router.delete(
-      '/',
+      '/:taskId',
       Wrapper.wrapAsync(TaskRouter.deleteTaskById),
     );
 
