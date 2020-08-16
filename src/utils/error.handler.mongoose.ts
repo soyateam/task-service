@@ -30,11 +30,18 @@ export class MongooseErrorHandler {
       // Any validation errors or casting error occurred by user input
       case 'ValidationError':
       case 'ValidatorError':
-      case 'CastError':
         return {
           status: 400,
           message: error.message,
         };
+
+      // Invalid converion (mostly by _id conversion to ObjectId)
+      case 'CastError': {
+        return {
+          status: 400,
+          message: 'Invalid id type given',
+        };
+      }
 
       // Checks duplicate key error
       // TODO: Make more beautiful error message
