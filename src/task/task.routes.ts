@@ -28,13 +28,13 @@ export class TaskRouter {
     );
 
     TaskRouter.router.get(
-      '/:taskId',
-      Wrapper.wrapAsync(TaskRouter.getTaskById),
+      `/${config.TASK_TYPE_ENDPOINT}/:type`,
+      Wrapper.wrapAsync(TaskRouter.getParentTasksByType),
     );
 
     TaskRouter.router.get(
-      '/',
-      Wrapper.wrapAsync(TaskRouter.getParentTasksByType),
+      '/:taskId',
+      Wrapper.wrapAsync(TaskRouter.getTaskById),
     );
 
     TaskRouter.router.put(
@@ -84,7 +84,7 @@ export class TaskRouter {
    * @param res - Express Response Object.
    */
   private static async getParentTasksByType(req: Request, res: Response) {
-    const type = req.query.type as string;
+    const type = req.params.type as string;
 
     // If the type given is valid
     if (type && TaskValidator.isTypeValid(type)) {

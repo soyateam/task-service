@@ -10,6 +10,7 @@ const config = {
   // Task Routes
   TASK_ENDPOINT: 'task',
   TASK_PARENT_ENDPOINT: 'parent',
+  TASK_TYPE_ENDPOINT: 'type',
 
 };
 
