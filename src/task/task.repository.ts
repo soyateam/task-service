@@ -24,9 +24,9 @@ export class TaskRepository extends GenericRepository<typeof taskModel> {
    */
   public update(taskProperties: Partial<ITask>) {
 
-    // For now only updates the orgIds/name/description values
+    // For now only updates the groups/name/description values
     const sanitizedProperties = {
-      ...(taskProperties.orgIds ? { orgIds: taskProperties.orgIds } : {}),
+      ...(taskProperties.groups ? { groups: taskProperties.groups } : {}),
       ...(taskProperties.name ? { name: taskProperties.name } : {}),
       ...(taskProperties.description ? { description: taskProperties.description } : {}),
     };

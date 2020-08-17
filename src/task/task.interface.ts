@@ -7,12 +7,17 @@ export enum TaskType {
   OperativeForce = 'OperativeForce',
 }
 
+export interface IGroup {
+  id: string; // Group id (in Kartoffel format) attached to task
+  name: string; // Group name
+}
+
 export interface ITask extends IBaseModel {
   parent: string | null; // Parent task id or null (if it the root parent)
   type: TaskType; // The type of the task
   name: string; // Name of the task
   description: string; // Description of the task
-  orgIds: string[]; // Organization ids (in Kartoffel format) attached to task
+  groups: IGroup[]; // Groups attached to task
   ancestors: string[]; // Ancestors of the tasks (the parent tasks above this task level)
 }
 
