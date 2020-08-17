@@ -10,7 +10,6 @@ export class TaskValidator {
     return (
       task &&
       task.name &&
-      task.description &&
       task.type
     );
   }
