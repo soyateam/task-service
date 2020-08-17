@@ -6,6 +6,8 @@ import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import { errorHandler } from './utils/error.handler';
+import { TaskRouter } from './task/task.routes';
+import config from './config';
 import './db_config'; // Create mongodb connections
 
 // App initialization
@@ -24,11 +26,14 @@ app.use(helmet());
 
 /* Routes */
 
-// Error handler
-app.use(errorHandler);
+// Task Routes
+app.use(`/${config.TASK_ENDPOINT}`, TaskRouter.getRouter());
 
 // Health check for Load Balancer
 app.get('/health', (req, res) => res.send('alive'));
+
+// Error handler
+app.use(errorHandler);
 
 // Handling all unknown route request with 404
 app.all('*', (req, res) => {
