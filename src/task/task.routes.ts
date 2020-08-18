@@ -33,6 +33,11 @@ export class TaskRouter {
     );
 
     TaskRouter.router.get(
+      `/:taskId/${config.TASK_CHILDREN_ENDPOINT}`,
+      Wrapper.wrapAsync(TaskRouter.getTaskChildren),
+    );
+
+    TaskRouter.router.get(
       '/:taskId',
       Wrapper.wrapAsync(TaskRouter.getTaskById),
     );
@@ -125,6 +130,30 @@ export class TaskRouter {
     }
 
     throw new InvalidParameter(TaskRouter.errorMessages.MISSING_PARENT_ID);
+  }
+
+  /**
+   * Get direct and indirect children of a given task.
+   * @param req - Express Request Object.
+   * @param res - Express Response Object.
+   */
+  private static async getTaskChildren(req: Request, res: Response) {
+    const taskId = req.params.taskId;
+
+    // If the request contains the task id
+    if (taskId) {
+      const childrenTasks = await TaskController.getTaskChildren(taskId);
+
+      // If children tasks found, return them
+      if (childrenTasks) {
+        return res.status(200).send(childrenTasks);
+      }
+
+      throw new NotFound(TaskRouter.errorMessages.TASKS_NOT_FOUND);
+    }
+
+    // Task id is not given
+    throw new InvalidParameter(TaskRouter.errorMessages.MISSING_TASK_ID);
   }
 
   /**
