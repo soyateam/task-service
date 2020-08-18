@@ -29,8 +29,11 @@ const taskSchema = new Schema({
     type: String,
     validate: [TaskValidator.isDescriptionValid, 'Invalid task description given.'],
   },
-  orgIds: {
-    type: [String],
+  groups: {
+    type: {
+      id: String,
+      name: String,
+    },
     required: true,
     default: [],
   },
