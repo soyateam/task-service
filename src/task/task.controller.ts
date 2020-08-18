@@ -71,6 +71,14 @@ export class TaskController {
   }
 
   /**
+   * Get task direct and indirect children
+   * @param taskId - Parent Task id
+   */
+  static async getTaskChildren(taskId: string) {
+    return await this.taskRepository.getChildren(taskId);
+  }
+
+  /**
    * Delete task by ObjectID
    * @param taskId - ObjectID of the task requested.
    */

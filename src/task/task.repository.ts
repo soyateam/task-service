@@ -45,4 +45,12 @@ export class TaskRepository extends GenericRepository<typeof taskModel> {
   public getParentsByType(type: TaskType) {
     return this.model.find({ type, parent: null });
   }
+
+  /**
+   * Get all children for a given task by id (direct and indirect children)
+   * @param taskId - The id of the task parent.
+   */
+  public getChildren(taskId: string) {
+    return this.model.find({ ancestors: taskId });
+  }
 }
