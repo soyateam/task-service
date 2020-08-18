@@ -92,7 +92,7 @@ export class TaskRouter {
       const tasks = await TaskController.getParentTasksByType(type as TaskType);
 
       // If tasks found
-      if (tasks && tasks.length > 0) {
+      if (tasks) {
         return res.status(200).send(tasks);
       }
 
@@ -117,7 +117,7 @@ export class TaskRouter {
       const tasks = await TaskController.getTasksByParentId(parentId);
 
       // If tasks found, return them
-      if (tasks && tasks.length > 0) {
+      if (tasks) {
         return res.status(200).send({ tasks });
       }
 
