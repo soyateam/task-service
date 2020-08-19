@@ -1,6 +1,7 @@
 ###--- STAGE 1 - Development ---###
 FROM node:12-alpine as DEV
 WORKDIR /usr/src/app
+ENV NODE_ENV=dev
 COPY package*.json ./
 RUN npm install
 
@@ -19,5 +20,5 @@ WORKDIR /usr/src/app
 COPY --from=BUILD /usr/src/app/package*.json ./
 COPY --from=BUILD /usr/src/app/dist ./dist
 RUN npm run install:prod
-ENTRYPOINT ["node", "/usr/src/app/dist/index.js"]
+ENTRYPOINT ["node", "/usr/src/app/dist/app.js"]
 EXPOSE 3000
