@@ -15,21 +15,16 @@ export enum LOG_LEVEL {
 
 const logger = winston.createLogger({
   defaultMeta: { service: "Task-Service" },
+  format: winston.format.combine(winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }), winston.format.json()),
+  transports: [new winston.transports.Console()],
 });
 
-const format = winston.format.combine(
-  winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-  winston.format.json()
-);
-
-logger.add(new winston.transports.Console());
-if (process.env.NODE_ENV !== "prod") {
+if (process.env.NODE_ENV == "prod") {
   logger.add(
     new winstonDailyRotateFile({
-      format,
       level: LOG_LEVEL.INFO,
       datePattern: "YYYY-MM-DD",
-      filename: process.env.LOG_FILE_NAME || "%DATE%.log",
+      filename: process.env.LOG_FILE_NAME || "task-service-%DATE%.log",
       dirname: process.env.LOG_FILE_DIR || ".",
     })
   );
