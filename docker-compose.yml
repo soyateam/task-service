@@ -3,6 +3,11 @@ services:
   task-service:
     container_name: task-service
     image: task-service:latest
+    environment: 
+      MONGO_URL: ds163060.mlab.com:63060/tasks
+      DB_USERNAME: admin
+      DB_PASSWORD: Aa123456
+      PORT: 3000
     ports:
       - "3000:3000"
     build: .
