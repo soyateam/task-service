@@ -50,7 +50,9 @@ const taskSchema = new Schema({
 
 taskSchema.methods.toJSON = function () {
   const obj = this.toObject();
-  obj.subTasksCount = this.$$populatedVirtuals.subTasksCount;
+ if (this.$$populatedVirtuals) {
+    obj.subTasksCount = this.$$populatedVirtuals.subTasksCount;
+ }
   delete obj.__v;
   return obj;
 };
