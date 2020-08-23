@@ -50,9 +50,17 @@ const taskSchema = new Schema({
 
 taskSchema.methods.toJSON = function () {
   const obj = this.toObject();
+  obj.subTasksCount = this.$$populatedVirtuals.subTasksCount;
   delete obj.__v;
   return obj;
 };
+
+taskSchema.virtual('subTasksCount', {
+  ref: collectionName,
+  localField: '_id',
+  foreignField: 'parent',
+  count: true,
+});
 
 const taskModel = model<ITask>(collectionName, taskSchema);
 
