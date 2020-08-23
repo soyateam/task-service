@@ -4,55 +4,60 @@ import { Schema, model } from 'mongoose';
 import { ITask, collectionName, TaskType } from './task.interface';
 import { TaskValidator } from './task.validator';
 
-const taskSchema = new Schema({
-  parent: {
-    type: String,
-    default: null,
-    validate: {
-      isAsync: true,
-      validator: TaskValidator.isParentValid,
-      message: 'Parent {VALUE} does not exist',
+const taskSchema = new Schema(
+  {
+    parent: {
+      type: String,
+      default: null,
+      validate: {
+        isAsync: true,
+        validator: TaskValidator.isParentValid,
+        message: 'Parent {VALUE} does not exist',
+      },
     },
-  },
-  type: {
-    type: String,
-    required: true,
-    enum: Object.keys(TaskType),
-  },
-  name: {
-    type: String,
-    required: true,
-    unique: true,
-    validate: [TaskValidator.isNameValid, 'Invalid task name given.'],
-  },
-  description: {
-    type: String,
-    validate: [TaskValidator.isDescriptionValid, 'Invalid task description given.'],
-  },
-  groups: {
     type: {
-      id: String,
-      name: String,
+      type: String,
+      required: true,
+      enum: Object.keys(TaskType),
     },
-    required: true,
-    default: [],
-  },
-  ancestors: {
-    type: [String],
-    default: [],
-    validate: {
-      isAsync: true,
-      validator: TaskValidator.isAncestorsValid,
-      message: 'Ancestors has incorrect reference',
+    name: {
+      type: String,
+      required: true,
+      unique: true,
+      validate: [TaskValidator.isNameValid, 'Invalid task name given.'],
+    },
+    description: {
+      type: String,
+      validate: [TaskValidator.isDescriptionValid, 'Invalid task description given.'],
+    },
+    groups: {
+      type: {
+        id: String,
+        name: String,
+      },
+      required: true,
+      default: [],
+    },
+    ancestors: {
+      type: [String],
+      default: [],
+      validate: {
+        isAsync: true,
+        validator: TaskValidator.isAncestorsValid,
+        message: 'Ancestors has incorrect reference',
+      },
     },
   },
-});
+  {
+    timestamps: true,
+  },
+);
 
 taskSchema.methods.toJSON = function () {
   const obj = this.toObject();
- if (this.$$populatedVirtuals) {
+  if (this.$$populatedVirtuals) {
     obj.subTasksCount = this.$$populatedVirtuals.subTasksCount;
- }
+  }
   delete obj.__v;
   return obj;
 };

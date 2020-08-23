@@ -29,7 +29,7 @@ export class TaskRouter {
 
     TaskRouter.router.get(
       `/${config.TASK_TYPE_ENDPOINT}/:type`,
-      Wrapper.wrapAsync(TaskRouter.getParentTasksByType),
+      Wrapper.wrapAsync(TaskRouter.getRootTasksByType),
     );
 
     TaskRouter.router.get(
@@ -71,13 +71,7 @@ export class TaskRouter {
     // If the request contains the id of the task
     if (taskId) {
       const task = await TaskController.getTaskById(taskId);
-
-      // If task found, return it
-      if (task) {
-        return res.status(200).send(task);
-      }
-
-      throw new NotFound(TaskRouter.errorMessages.TASK_NOT_FOUND);
+      return res.status(200).send(task);
     }
 
     throw new InvalidParameter(TaskRouter.errorMessages.MISSING_TASK_ID);
@@ -88,21 +82,13 @@ export class TaskRouter {
    * @param req - Express Request Object.
    * @param res - Express Response Object.
    */
-  private static async getParentTasksByType(req: Request, res: Response) {
+  private static async getRootTasksByType(req: Request, res: Response) {
     const type = req.params.type as string;
 
     // If the type given is valid
     if (type && TaskValidator.isTypeValid(type)) {
-
-      const tasks = await TaskController.getParentTasksByType(type as TaskType);
-
-      // If tasks found
-      if (tasks) {
-        return res.status(200).send(tasks);
-      }
-
-      // Tasks not found error
-      throw new NotFound(TaskRouter.errorMessages.TASKS_NOT_FOUND);
+      const tasks = await TaskController.getRootTasksByType(type as TaskType);
+      return res.status(200).send(tasks);
     }
 
     // Invalid task type given, throw error
@@ -120,13 +106,7 @@ export class TaskRouter {
     // If the request contains the parent id of the tasks
     if (parentId) {
       const tasks = await TaskController.getTasksByParentId(parentId);
-
-      // If tasks found, return them
-      if (tasks) {
-        return res.status(200).send({ tasks });
-      }
-
-      throw new NotFound(TaskRouter.errorMessages.TASKS_NOT_FOUND);
+      return res.status(200).send({ tasks });
     }
 
     throw new InvalidParameter(TaskRouter.errorMessages.MISSING_PARENT_ID);
@@ -143,13 +123,7 @@ export class TaskRouter {
     // If the request contains the task id
     if (taskId) {
       const childrenTasks = await TaskController.getTaskChildren(taskId);
-
-      // If children tasks found, return them
-      if (childrenTasks) {
-        return res.status(200).send(childrenTasks);
-      }
-
-      throw new NotFound(TaskRouter.errorMessages.TASKS_NOT_FOUND);
+      return res.status(200).send(childrenTasks);
     }
 
     // Task id is not given
@@ -169,12 +143,7 @@ export class TaskRouter {
 
       // Create the task
       const createdTask = await TaskController.createTask(taskProperties);
-
-      // If task created successfully
-      if (createdTask) {
-        return res.status(200).send(createdTask);
-      }
-
+      return res.status(200).send(createdTask);
     }
 
     throw new InvalidParameter(TaskRouter.errorMessages.INVALID_TASK_PROPERTIES);
@@ -193,14 +162,7 @@ export class TaskRouter {
 
       // Update the task with the given properites
       const updatedTask = await TaskController.updateTask(taskProperties);
-
-      // If task is exists and updated
-      if (updatedTask) {
-        return res.status(200).send(updatedTask);
-      }
-
-      // Task for update was not found
-      throw new NotFound(TaskRouter.errorMessages.TASK_NOT_FOUND);
+      return res.status(200).send(updatedTask);
     }
 
     // Bad task properites given
@@ -218,13 +180,7 @@ export class TaskRouter {
     // If the request contains the id of the task
     if (taskId) {
       const task = await TaskController.deleteTaskById(taskId);
-
-      // If task deleted successfully
-      if (task) {
-        return res.status(200).send(task);
-      }
-
-      throw new NotFound(TaskRouter.errorMessages.TASK_NOT_FOUND);
+      return res.status(200).send(task);
     }
 
     throw new InvalidParameter(TaskRouter.errorMessages.MISSING_TASK_ID);

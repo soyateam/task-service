@@ -5,7 +5,6 @@ import { ITask, TaskType } from './task.interface';
 import { InvalidParentTask } from './task.error';
 
 export class TaskController {
-  private static readonly taskRepository = new TaskRepository();
 
   /**
    * Create a task
@@ -17,7 +16,7 @@ export class TaskController {
     if (taskProperties.parent) {
 
       // Find the parent task
-      const parentTask = await this.taskRepository.getById(taskProperties.parent) as ITask;
+      const parentTask = await TaskRepository.getById(taskProperties.parent) as ITask;
 
       if (parentTask) {
         // Attach the ancestors from the parent task to the ancestors of the sub task
@@ -27,7 +26,7 @@ export class TaskController {
         taskProperties.type = parentTask.type;
 
         // Create the task
-        return await this.taskRepository.create(taskProperties);
+        return await TaskRepository.create(taskProperties);
       }
 
       // If the task parent value is invalid, throw an error
@@ -35,7 +34,7 @@ export class TaskController {
     }
 
     // Root task case
-    return await this.taskRepository.create(taskProperties);
+    return await TaskRepository.create(taskProperties);
   }
 
   /**
@@ -43,15 +42,15 @@ export class TaskController {
    * @param taskProperties - Task properites to update
    */
   static async updateTask(taskProperties: Partial<ITask>) {
-    return await this.taskRepository.update(taskProperties);
+    return await TaskRepository.update(taskProperties);
   }
 
   /**
    * Get root parent tasks by task type
    * @param type - Task type.
    */
-  static async getParentTasksByType(type: TaskType) {
-    return await this.taskRepository.getParentsByType(type);
+  static async getRootTasksByType(type: TaskType) {
+    return await TaskRepository.getRootsByType(type);
   }
 
   /**
@@ -59,7 +58,7 @@ export class TaskController {
    * @param taskId - ObjectID of the task requested.
    */
   static async getTaskById(taskId: string) {
-    return await this.taskRepository.getById(taskId);
+    return await TaskRepository.getById(taskId);
   }
 
   /**
@@ -67,7 +66,7 @@ export class TaskController {
    * @param parentId - Parent Task id
    */
   static async getTasksByParentId(parentId: string) {
-    return await this.taskRepository.getByParentId(parentId);
+    return await TaskRepository.getByParentId(parentId);
   }
 
   /**
@@ -75,7 +74,7 @@ export class TaskController {
    * @param taskId - Parent Task id
    */
   static async getTaskChildren(taskId: string) {
-    return await this.taskRepository.getChildren(taskId);
+    return await TaskRepository.getChildren(taskId);
   }
 
   /**
@@ -83,6 +82,6 @@ export class TaskController {
    * @param taskId - ObjectID of the task requested.
    */
   static async deleteTaskById(taskId: string) {
-    return await this.taskRepository.deleteById(taskId);
+    return await TaskRepository.deleteById(taskId);
   }
 }

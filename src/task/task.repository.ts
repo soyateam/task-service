@@ -1,28 +1,58 @@
 // task.repository.ts
 
-import { GenericRepository } from '../generic/generic.repository';
 import { TaskType, ITask } from './task.interface';
 import taskModel from './task.model';
 
-export class TaskRepository extends GenericRepository<typeof taskModel> {
+export class TaskRepository {
 
-  constructor() {
-    super(taskModel);
+  private static populationFields = 'subTasksCount';
+
+  /**
+   * Get task by id.
+   * @param taskId - The id of the task
+   */
+  public static getById(taskId: string) {
+    return taskModel.findById(taskId).populate(TaskRepository.populationFields).exec();
   }
+
+  /**
+   * Get all tasks.
+   */
+  public static getAll(): any {
+    return taskModel.find().populate(TaskRepository.populationFields).exec();
+  }
+
+  /**
+   * Create a document model by his properties.
+   * @param modelProperties - Properties of the model.
+   */
+  public static create(modelProperties: any) {
+    return taskModel.create(modelProperties);
+  }
+
+  /**
+   * Delete task by id.
+   * @param taskId - The id of the task
+   */
+  public static deleteById(taskId: string): any {
+    return taskModel.findByIdAndDelete({ _id: taskId });
+  }
+
+  /** Task Repository Self Implemented Methods **/
 
   /**
    * Get tasks by parent task id.
    * @param parentId - ObjectID of the parent task.
    */
-  public getByParentId(parentId: string) {
-    return this.model.find({ parent: parentId === 'null' ? null : parentId }).populate('subTasksCount').exec();
+  public static getByParentId(parentId: string) {
+    return taskModel.find({ parent: parentId === 'null' ? null : parentId }).populate('subTasksCount').exec();
   }
 
   /**
    * Update task by given properites.
    * @param taskProperties - Task properites to update
    */
-  public update(taskProperties: Partial<ITask>) {
+  public static update(taskProperties: Partial<ITask>) {
 
     // For now only updates the groups/name/description values
     const sanitizedProperties = {
@@ -31,26 +61,26 @@ export class TaskRepository extends GenericRepository<typeof taskModel> {
       ...(taskProperties.description ? { description: taskProperties.description } : {}),
     };
 
-    return this.model.findOneAndUpdate(
+    return taskModel.findOneAndUpdate(
       { _id: taskProperties._id },
       { $set: sanitizedProperties },
       { new: true },
-    ).populate('subTasksCount').exec();
+    ).populate(TaskRepository.populationFields).exec();
   }
 
   /**
    * Get root parents by task type
    * @param type - Task type.
    */
-  public getParentsByType(type: TaskType) {
-    return this.model.find({ type, parent: null }).populate('subTasksCount').exec();
+  public static getRootsByType(type: TaskType) {
+    return taskModel.find({ type, parent: null }).populate(TaskRepository.populationFields).exec();
   }
 
   /**
    * Get all children for a given task by id (direct and indirect children)
    * @param taskId - The id of the task parent.
    */
-  public getChildren(taskId: string) {
-    return this.model.find({ ancestors: taskId }).populate('subTasksCount').exec();
+  public static getChildren(taskId: string) {
+    return taskModel.find({ ancestors: taskId }).populate(TaskRepository.populationFields).exec();
   }
 }
