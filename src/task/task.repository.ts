@@ -15,7 +15,7 @@ export class TaskRepository extends GenericRepository<typeof taskModel> {
    * @param parentId - ObjectID of the parent task.
    */
   public getByParentId(parentId: string) {
-    return this.model.find({ parent: parentId === 'null' ? null : parentId });
+    return this.model.find({ parent: parentId === 'null' ? null : parentId }).populate('subTasksCount').exec();
   }
 
   /**
@@ -35,7 +35,7 @@ export class TaskRepository extends GenericRepository<typeof taskModel> {
       { _id: taskProperties._id },
       { $set: sanitizedProperties },
       { new: true },
-    );
+    ).populate('subTasksCount').exec();
   }
 
   /**
@@ -43,7 +43,7 @@ export class TaskRepository extends GenericRepository<typeof taskModel> {
    * @param type - Task type.
    */
   public getParentsByType(type: TaskType) {
-    return this.model.find({ type, parent: null });
+    return this.model.find({ type, parent: null }).populate('subTasksCount').exec();
   }
 
   /**
@@ -51,6 +51,6 @@ export class TaskRepository extends GenericRepository<typeof taskModel> {
    * @param taskId - The id of the task parent.
    */
   public getChildren(taskId: string) {
-    return this.model.find({ ancestors: taskId });
+    return this.model.find({ ancestors: taskId }).populate('subTasksCount').exec();
   }
 }
