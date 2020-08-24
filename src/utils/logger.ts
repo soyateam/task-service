@@ -30,9 +30,12 @@ if (process.env.NODE_ENV == "prod") {
   );
 }
 
-export const log = (severity: string, meta: any, error?: any) => {
-  const { message, ...other } = meta;
+export const log = (severity: LOG_LEVEL = LOG_LEVEL.INFO, logMessage: any, error?: any) => {
   const errorDetails = error ? { error: { message: error.message, stack: error.stack, name: error.name } } : {};
 
-  logger.log({ level: severity, message: message, ...other, ...errorDetails });
+  logger.log({
+    level: severity,
+    message: logMessage,
+    ...errorDetails,
+  });
 };
