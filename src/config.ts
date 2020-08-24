@@ -3,7 +3,7 @@
 const config = {
   // MongoDB Url
   mongoUrl:
-    `mongodb://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.MONGO_URL}`,
+    `mongodb://${process.env.MONGO_CONNECTION_STRING}/${process.env.TASK_DB_NAME}`,
 
   /* Routes Configuration */
 
