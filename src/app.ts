@@ -16,11 +16,27 @@ const app = express();
 // Morgan formatting types for each environment
 const morganFormatting: any = { prod: 'common', dev: 'dev', test: 'tiny' };
 
+const addHeaders = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  res.setHeader('Access-Control-Allow-Origin', config.cors.allowedOrigin);
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Authorization, Origin, X-Requested-With, Content-Type'
+  );
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  return next();
+};
+
 // Middlewares
 app.set('port', process.env.PORT);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(addHeaders);
 app.use(morgan(morganFormatting[process.env.NODE_ENV || 'dev']));
 app.use(helmet());
 
