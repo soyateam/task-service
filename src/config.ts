@@ -2,8 +2,7 @@
 
 const config = {
   // MongoDB Url
-  mongoUrl:
-    `mongodb://${process.env.MONGO_CONNECTION_STRING}/${process.env.TASK_DB_NAME}`,
+  mongoUrl: process.env.MONGO_CONNECTION_STRING || 'mongodb://mongo:27017',
 
   /* Routes Configuration */
 
