@@ -23,7 +23,6 @@ const taskSchema = new Schema(
     name: {
       type: String,
       required: true,
-      unique: true,
       validate: [TaskValidator.isNameValid, 'Invalid task name given.'],
     },
     description: {
