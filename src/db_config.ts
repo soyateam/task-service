@@ -2,13 +2,13 @@
 
 import mongoose from 'mongoose';
 import config from './config';
+import { log, LOG_LEVEL } from './utils/logger';
 
 mongoose.connect(config.mongoUrl, (err) => {
   if (err) {
-    console.error('Error connnecting to mongoose');
-    console.error(err);
+    log(LOG_LEVEL.ERROR, 'Error connnecting to mongoose', err);
     process.exit();
   }
 
-  console.log('MongoDB Connection Established');
+  log(LOG_LEVEL.INFO, 'MongoDB Connection Established');
 });

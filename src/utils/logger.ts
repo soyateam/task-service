@@ -1,40 +1,44 @@
 // logger
 
 import * as winston from 'winston';
-import winstonDailyRotateFile from 'winston-daily-rotate-file';
+import { MongoDB } from 'winston-mongodb';
+import config from '../config';
 
 // log levels
 export enum LOG_LEVEL {
-    ERROR = 'error',
-    WARN = 'warn',
-    INFO = 'info',
-    VERBOSE = 'verbose',
-    DEBUG = 'debug',
-    SILLY = 'silly',
+  ERROR = 'error',
+  WARN = 'warn',
+  INFO = 'info',
+  VERBOSE = 'verbose',
+  DEBUG = 'debug',
+  SILLY = 'silly',
 }
 
 const logger = winston.createLogger({
-  defaultMeta: { service: 'Task-Service' },
+  format: winston.format.combine(
+    winston.format.metadata(),
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    winston.format.json()
+  ),
+  transports: [new winston.transports.Console()],
 });
 
-const format = winston.format.combine(
-  winston.format.timestamp({
-    format: 'YYYY-MM-DD HH:mm:ss',
-  }),
-  winston.format.json());
+if (process.env.NODE_ENV === 'prod') {
+  const mongoLogger = new MongoDB({
+    level: LOG_LEVEL.INFO,
+    label: config.serviceName,
+    collection: `${config.serviceName}-log`,
+    db: config.logs.connectionStringLogs,
+    expireAfterSeconds: config.logs.expiredInSec,
+    tryReconnect: true,
+  });
 
-logger.add(new winstonDailyRotateFile({
-  format,
-  level: LOG_LEVEL.INFO,
-  datePattern: 'YYYY-MM-DD',
-  filename: process.env.LOG_FILE_NAME || 'log.txt',
-  dirname: process.env.LOG_FILE_DIR || '.',
-}));
+  logger.add(mongoLogger);
+}
+export const log = (severity: string, message: any, error?: any) => {
+  const errorDetails = error
+    ? { error: { message: error.message, stack: error.stack, name: error.name } }
+    : {};
 
-export const log = (severity: string, meta: any, error?: any) => {
-  const { message, ...other } = meta;
-  const errorDetails =
-    error ? { error: { message: error.message, stack: error.stack, name: error.name } } : {};
-
-  logger.log(severity, message, { ...other, ...errorDetails });
+  logger.log({ level: severity, message, ...errorDetails });
 };
