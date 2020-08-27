@@ -9,7 +9,6 @@ import { TaskValidator } from './task.validator';
 import { TaskType } from './task.interface';
 
 export class TaskRouter {
-
   private static router = Router();
   private static errorMessages = {
     MISSING_TASK_ID: 'Task id is missing.',
@@ -21,41 +20,28 @@ export class TaskRouter {
   };
 
   public static getRouter() {
-
     TaskRouter.router.get(
       `/${config.TASK_PARENT_ENDPOINT}/:parentId`,
-      Wrapper.wrapAsync(TaskRouter.getTasksByParentId),
+      Wrapper.wrapAsync(TaskRouter.getTasksByParentId)
     );
 
     TaskRouter.router.get(
       `/${config.TASK_TYPE_ENDPOINT}/:type`,
-      Wrapper.wrapAsync(TaskRouter.getRootTasksByType),
+      Wrapper.wrapAsync(TaskRouter.getRootTasksByType)
     );
 
     TaskRouter.router.get(
       `/:taskId/${config.TASK_CHILDREN_ENDPOINT}`,
-      Wrapper.wrapAsync(TaskRouter.getTaskChildren),
+      Wrapper.wrapAsync(TaskRouter.getTaskChildren)
     );
 
-    TaskRouter.router.get(
-      '/:taskId',
-      Wrapper.wrapAsync(TaskRouter.getTaskById),
-    );
+    TaskRouter.router.get('/:taskId', Wrapper.wrapAsync(TaskRouter.getTaskById));
 
-    TaskRouter.router.put(
-      '/',
-      Wrapper.wrapAsync(TaskRouter.updateTask),
-    );
+    TaskRouter.router.put('/', Wrapper.wrapAsync(TaskRouter.updateTask));
 
-    TaskRouter.router.post(
-      '/',
-      Wrapper.wrapAsync(TaskRouter.createTask),
-    );
+    TaskRouter.router.post('/', Wrapper.wrapAsync(TaskRouter.createTask));
 
-    TaskRouter.router.delete(
-      '/:taskId',
-      Wrapper.wrapAsync(TaskRouter.deleteTaskById),
-    );
+    TaskRouter.router.delete('/:taskId', Wrapper.wrapAsync(TaskRouter.deleteTaskById));
 
     return TaskRouter.router;
   }
@@ -140,7 +126,6 @@ export class TaskRouter {
 
     // If the request contains the task properties
     if (TaskValidator.isValid(taskProperties)) {
-
       // Create the task
       const createdTask = await TaskController.createTask(taskProperties);
       return res.status(200).send(createdTask);
@@ -159,7 +144,6 @@ export class TaskRouter {
 
     // If task properties to update is given
     if (taskProperties) {
-
       // Update the task with the given properites
       const updatedTask = await TaskController.updateTask(taskProperties);
       return res.status(200).send(updatedTask);
@@ -185,7 +169,6 @@ export class TaskRouter {
 
     throw new InvalidParameter(TaskRouter.errorMessages.MISSING_TASK_ID);
   }
-
 }
 const taskRouter = Router();
 

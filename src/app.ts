@@ -8,7 +8,6 @@ import helmet from 'helmet';
 import { errorHandler } from './utils/error.handler';
 import { TaskRouter } from './task/task.routes';
 import config from './config';
-import './db_config'; // Create mongodb connections
 
 // App initialization
 const app = express();
@@ -18,11 +17,12 @@ const morganFormatting: any = { prod: 'common', dev: 'dev', test: 'tiny' };
 
 // Middlewares
 app.set('port', process.env.PORT);
-app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(morgan(morganFormatting[process.env.NODE_ENV || 'dev']));
 app.use(helmet());
+
+app.use(morgan(morganFormatting[process.env.NODE_ENV || 'dev']));
 
 /* Routes */
 
@@ -30,14 +30,14 @@ app.use(helmet());
 app.use(`/${config.TASK_ENDPOINT}`, TaskRouter.getRouter());
 
 // Health check for Load Balancer
-app.get('/health', (req, res) => res.send('alive'));
-
-// Error handler
-app.use(errorHandler);
+app.get('/isalive', (req, res) => res.send('OK'));
 
 // Handling all unknown route request with 404
 app.all('*', (req, res) => {
   res.status(404).send({ message: 'Page not found' });
 });
+
+// Error handler
+app.use(errorHandler);
 
 export default app;
