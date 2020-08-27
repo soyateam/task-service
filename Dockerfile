@@ -2,6 +2,7 @@
 FROM node:12-alpine as DEV
 WORKDIR /usr/src/app
 COPY package*.json ./
+COPY tsconfig.json ./
 RUN npm install
 
 ###--- STAGE 2 - Build ---###

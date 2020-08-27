@@ -5,18 +5,15 @@ import { ITask, TaskType } from './task.interface';
 import { InvalidParentTask } from './task.error';
 
 export class TaskController {
-
   /**
    * Create a task
    * @param taskProperties - Task properties
    */
   static async createTask(taskProperties: ITask) {
-
     // If it sub task
     if (taskProperties.parent) {
-
       // Find the parent task
-      const parentTask = await TaskRepository.getById(taskProperties.parent) as ITask;
+      const parentTask = (await TaskRepository.getById(taskProperties.parent)) as ITask;
 
       if (parentTask) {
         // Attach the ancestors from the parent task to the ancestors of the sub task

@@ -10,8 +10,7 @@ const taskSchema = new Schema(
       type: String,
       default: null,
       validate: {
-        isAsync: true,
-        validator: TaskValidator.isParentValid,
+        validator: () => Promise.resolve(TaskValidator.isParentValid) as any,
         message: 'Parent {VALUE} does not exist',
       },
     },
@@ -42,15 +41,14 @@ const taskSchema = new Schema(
       type: [String],
       default: [],
       validate: {
-        isAsync: true,
-        validator: TaskValidator.isAncestorsValid,
+        validator: () => Promise.resolve(TaskValidator.isAncestorsValid) as any,
         message: 'Ancestors has incorrect reference',
       },
     },
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 taskSchema.methods.toJSON = function () {
