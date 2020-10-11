@@ -1,0 +1,20 @@
+version: '3.5'
+services:
+  task-service:
+    container_name: task-service
+    image: task-service:latest
+    environment:
+      MONGO_CONNECTION_STRING: mongodb://mongo:27017
+      PORT: 3000
+    ports:
+      - '3000:3000'
+    build: .
+    volumes:
+      - ./logs:/usr/src/app/logs
+    depends_on:
+      - mongo
+    restart: always
+  mongo:
+    image: mongo:latest
+    ports:
+      - '27017:27017'

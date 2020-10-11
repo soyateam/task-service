@@ -1,0 +1,15 @@
+version: '3.5'
+services:
+  task-service:
+    image: task-service:latest
+    command: npm run dev
+    ports:
+      - '3001:3001'
+    build:
+      context: .
+      target: DEV
+    volumes:
+      - ./src:/usr/src/app/src/task-service
+    environment:
+      - PORT=3001
+      - MONGO_CONNECTION_STRING=mongodb://admin:Aa123456@ds163060.mlab.com:63060/tasks
