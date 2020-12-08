@@ -70,8 +70,8 @@ export class TaskController {
    * Get task direct and indirect children
    * @param taskId - Parent Task id
    */
-  static async getTaskChildren(taskId: string) {
-    return await TaskRepository.getChildren(taskId);
+  static async getTaskChildren(taskId: string, depth?: number) {
+    return await TaskRepository.getChildren(taskId, depth);
   }
 
   /**

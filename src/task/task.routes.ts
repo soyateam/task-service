@@ -22,17 +22,22 @@ export class TaskRouter {
   public static getRouter() {
     TaskRouter.router.get(
       `/${config.TASK_PARENT_ENDPOINT}/:parentId`,
-      Wrapper.wrapAsync(TaskRouter.getTasksByParentId)
+      Wrapper.wrapAsync(TaskRouter.getTasksByParentId),
     );
 
     TaskRouter.router.get(
       `/${config.TASK_TYPE_ENDPOINT}/:type`,
-      Wrapper.wrapAsync(TaskRouter.getRootTasksByType)
+      Wrapper.wrapAsync(TaskRouter.getRootTasksByType),
+    );
+
+    TaskRouter.router.get(
+      `/:taskId/${config.TASK_CHILDREN_ENDPOINT}/depth/:depthLevel`,
+      Wrapper.wrapAsync(TaskRouter.getTasksChildrenByDepthLevel),
     );
 
     TaskRouter.router.get(
       `/:taskId/${config.TASK_CHILDREN_ENDPOINT}`,
-      Wrapper.wrapAsync(TaskRouter.getTaskChildren)
+      Wrapper.wrapAsync(TaskRouter.getTaskChildren),
     );
 
     TaskRouter.router.get('/:taskId', Wrapper.wrapAsync(TaskRouter.getTaskById));
@@ -109,6 +114,32 @@ export class TaskRouter {
     // If the request contains the task id
     if (taskId) {
       const childrenTasks = await TaskController.getTaskChildren(taskId);
+      return res.status(200).send(childrenTasks);
+    }
+
+    // Task id is not given
+    throw new InvalidParameter(TaskRouter.errorMessages.MISSING_TASK_ID);
+  }
+
+  /**
+   * Get direct and indirect children of a given task, by depth level given.
+   * @param req - Express Request Object.
+   * @param res - Express Response Object.
+   */
+  private static async getTasksChildrenByDepthLevel(req: Request, res: Response) {
+    const taskId = req.params.taskId;
+    const depthLevel = parseInt(req.params.depthLevel, 10);
+
+    // If the request contains the task id
+    if (taskId) {
+
+      // If depth level passed, return children by depth level given.
+      // Otherwise, return all task children.
+      const childrenTasks = await TaskController.getTaskChildren(
+        taskId,
+        depthLevel !== NaN || depthLevel <= 0 ? depthLevel : undefined,
+      );
+
       return res.status(200).send(childrenTasks);
     }
 

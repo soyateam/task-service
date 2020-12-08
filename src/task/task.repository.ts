@@ -1,6 +1,9 @@
 // task.repository.ts
 
+import { Types } from 'mongoose';
+
 import { TaskType, ITask } from './task.interface';
+import TaskUtils from './task.utils';
 import taskModel from './task.model';
 
 export class TaskRepository {
@@ -80,7 +83,34 @@ export class TaskRepository {
    * Get all children for a given task by id (direct and indirect children)
    * @param taskId - The id of the task parent.
    */
-  public static getChildren(taskId: string) {
-    return taskModel.find({ ancestors: taskId }).populate(TaskRepository.populationFields).exec();
+  public static async getChildren(taskId: string, depthLevel?: number) {
+
+    if (depthLevel) {
+      const taskWithChildren = await taskModel.aggregate([
+        {
+          $match: {
+            _id: new Types.ObjectId(taskId),
+          },
+        },
+        {
+          $graphLookup: {
+            from: 'tasks',
+            startWith: '$_id',
+            connectFromField: '_id',
+            connectToField: 'parent',
+            as: 'children',
+            maxDepth: depthLevel - 1,
+            depthField: 'depth',
+          },
+        },
+      ]);
+
+      return TaskUtils.createTree(taskWithChildren[0]);
+    }
+
+    return (
+      await taskModel.find({ ancestors: taskId }).populate(TaskRepository.populationFields).exec()
+    );
   }
+
 }
