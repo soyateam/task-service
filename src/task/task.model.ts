@@ -7,7 +7,7 @@ import { TaskValidator } from './task.validator';
 const taskSchema = new Schema(
   {
     parent: {
-      type: String,
+      type: Schema.Types.ObjectId,
       default: null,
       validate: {
         validator: () => Promise.resolve(TaskValidator.isParentValid) as any,
@@ -47,7 +47,7 @@ const taskSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 taskSchema.methods.toJSON = function () {
