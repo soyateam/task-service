@@ -1,21 +1,23 @@
-
 export default class TaskUtils {
 
   public static createTree(data: any) {
-    console.log('test');
-    data.children.push({
-      name: data.name,
-      _id: data._id,
-      parent: data.parent,
-      groups: data.groups,
-      ancestors: data.ancestors,
-      description: data.description,
-      type: data.type,
-    });
+    if (data) {
+      data.children.push({
+        name: data.name,
+        _id: data._id,
+        parent: data.parent,
+        groups: data.groups,
+        ancestors: data.ancestors,
+        description: data.description,
+        type: data.type,
+      });
 
-    const result = TaskUtils.createTreeInternal(data, data._id.toString());
-    console.log('Result:', result.children);
-    return result;
+      const result = TaskUtils.createTreeInternal(data, data._id.toString());
+      console.log('Result:', result.children);
+      return result;
+    }
+
+    return null;
   }
 
   private static createTreeInternal(data: any, currId: any) {
@@ -24,6 +26,7 @@ export default class TaskUtils {
     if (childs.length === 0) {
       return {
         ...currObj,
+        children: [],
       };
     }
 
