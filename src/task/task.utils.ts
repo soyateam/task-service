@@ -12,9 +12,7 @@ export default class TaskUtils {
         type: data.type,
       });
 
-      const result = TaskUtils.createTreeInternal(data, data._id.toString());
-      console.log('Result:', result.children);
-      return result;
+      return TaskUtils.createTreeInternal(data, data._id.toString());
     }
 
     return null;
