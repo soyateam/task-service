@@ -58,10 +58,11 @@ export class TaskRouter {
    */
   private static async getTaskById(req: Request, res: Response) {
     const taskId = req.params.taskId;
+    const dateFilter = req.query.date as string || config.CURRENT_DATE_VALUE;
 
     // If the request contains the id of the task
     if (taskId) {
-      const task = await TaskController.getTaskById(taskId);
+      const task = await TaskController.getTaskById(taskId, dateFilter);
       return res.status(200).send(task);
     }
 
@@ -75,10 +76,11 @@ export class TaskRouter {
    */
   private static async getRootTasksByType(req: Request, res: Response) {
     const type = req.params.type as string;
+    const dateFilter = req.query.date as string || config.CURRENT_DATE_VALUE;
 
     // If the type given is valid
     if (type && TaskValidator.isTypeValid(type)) {
-      const tasks = await TaskController.getRootTasksByType(type as TaskType);
+      const tasks = await TaskController.getRootTasksByType(type as TaskType, dateFilter);
       return res.status(200).send(tasks);
     }
 
@@ -93,10 +95,11 @@ export class TaskRouter {
    */
   private static async getTasksByParentId(req: Request, res: Response) {
     const parentId = req.params.parentId;
+    const dateFilter = req.query.date as string || config.CURRENT_DATE_VALUE;
 
     // If the request contains the parent id of the tasks
     if (parentId) {
-      const tasks = await TaskController.getTasksByParentId(parentId);
+      const tasks = await TaskController.getTasksByParentId(parentId, dateFilter);
       return res.status(200).send({ tasks });
     }
 
@@ -110,10 +113,11 @@ export class TaskRouter {
    */
   private static async getTaskChildren(req: Request, res: Response) {
     const taskId = req.params.taskId;
+    const dateFilter = req.query.date as string || config.CURRENT_DATE_VALUE;
 
     // If the request contains the task id
     if (taskId) {
-      const childrenTasks = await TaskController.getTaskChildren(taskId);
+      const childrenTasks = await TaskController.getTaskChildren(taskId, undefined, dateFilter);
       return res.status(200).send(childrenTasks);
     }
 
@@ -129,6 +133,7 @@ export class TaskRouter {
   private static async getTasksChildrenByDepthLevel(req: Request, res: Response) {
     const taskId = req.params.taskId;
     const depthLevel = parseInt(req.params.depthLevel, 10);
+    const dateFilter = req.query.date as string || config.CURRENT_DATE_VALUE;
 
     // If the request contains the task id
     if (taskId) {
@@ -138,6 +143,7 @@ export class TaskRouter {
       const childrenTasks = await TaskController.getTaskChildren(
         taskId,
         depthLevel !== NaN || depthLevel <= 0 ? depthLevel : undefined,
+        dateFilter,
       );
 
       return res.status(200).send(childrenTasks);
@@ -157,6 +163,7 @@ export class TaskRouter {
 
     // If the request contains the task properties
     if (TaskValidator.isValid(taskProperties)) {
+
       // Create the task
       const createdTask = await TaskController.createTask(taskProperties);
       return res.status(200).send(createdTask);
@@ -175,6 +182,7 @@ export class TaskRouter {
 
     // If task properties to update is given
     if (taskProperties) {
+
       // Update the task with the given properites
       const updatedTask = await TaskController.updateTask(taskProperties);
       return res.status(200).send(updatedTask);

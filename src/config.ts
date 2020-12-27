@@ -17,6 +17,9 @@ const config = {
   TASK_PARENT_ENDPOINT: 'parent',
   TASK_TYPE_ENDPOINT: 'type',
   TASK_CHILDREN_ENDPOINT: 'children',
+
+  // Current date field value
+  CURRENT_DATE_VALUE: 'CURRENT_DATE',
 };
 
 export default config;

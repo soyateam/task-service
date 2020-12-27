@@ -10,12 +10,13 @@ export default class TaskUtils {
         ancestors: data.ancestors,
         description: data.description,
         type: data.type,
+        date: data.date,
       });
 
       return TaskUtils.createTreeInternal(data, data._id.toString());
     }
 
-    return null;
+    return {};
   }
 
   private static createTreeInternal(data: any, currId: any) {

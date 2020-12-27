@@ -5,6 +5,7 @@ import { Types } from 'mongoose';
 import { TaskType, ITask } from './task.interface';
 import TaskUtils from './task.utils';
 import taskModel from './task.model';
+import config from '../config';
 
 export class TaskRepository {
 
@@ -14,15 +15,15 @@ export class TaskRepository {
    * Get task by id.
    * @param taskId - The id of the task
    */
-  public static getById(taskId: string) {
-    return taskModel.findById(taskId).populate(TaskRepository.populationFields).exec();
+  public static getById(taskId: string, dateFilter: string = config.CURRENT_DATE_VALUE) {
+    return taskModel.findOne({ _id: taskId, date: dateFilter }).populate(TaskRepository.populationFields).exec();
   }
 
   /**
    * Get all tasks.
    */
-  public static getAll(): any {
-    return taskModel.find().populate(TaskRepository.populationFields).exec();
+  public static getAll(dateFilter: string = config.CURRENT_DATE_VALUE): any {
+    return taskModel.find({ date: dateFilter }).populate(TaskRepository.populationFields).exec();
   }
 
   /**
@@ -30,7 +31,8 @@ export class TaskRepository {
    * @param modelProperties - Properties of the model.
    */
   public static create(modelProperties: any) {
-    return taskModel.create(modelProperties);
+    const dateFilter = config.CURRENT_DATE_VALUE;
+    return taskModel.create({ ...modelProperties, date: dateFilter });
   }
 
   /**
@@ -47,8 +49,8 @@ export class TaskRepository {
    * Get tasks by parent task id.
    * @param parentId - ObjectID of the parent task.
    */
-  public static getByParentId(parentId: string) {
-    return taskModel.find({ parent: parentId === 'null' ? null : parentId }).populate('subTasksCount').exec();
+  public static getByParentId(parentId: string, dateFilter: string = config.CURRENT_DATE_VALUE) {
+    return taskModel.find({ parent: parentId === 'null' ? null : parentId, date: dateFilter }).populate('subTasksCount').exec();
   }
 
   /**
@@ -65,7 +67,7 @@ export class TaskRepository {
     };
 
     return taskModel.findOneAndUpdate(
-      { _id: taskProperties._id },
+      { _id: taskProperties._id, date: config.CURRENT_DATE_VALUE },
       { $set: sanitizedProperties },
       { new: true },
     ).populate(TaskRepository.populationFields).exec();
@@ -75,21 +77,22 @@ export class TaskRepository {
    * Get root parents by task type
    * @param type - Task type.
    */
-  public static getRootsByType(type: TaskType) {
-    return taskModel.find({ type, parent: null }).populate(TaskRepository.populationFields).exec();
+  public static getRootsByType(type: TaskType, dateFilter: string = config.CURRENT_DATE_VALUE) {
+    return taskModel.find({ type, parent: null, date: dateFilter }).populate(TaskRepository.populationFields).exec();
   }
 
   /**
    * Get all children for a given task by id (direct and indirect children)
    * @param taskId - The id of the task parent.
    */
-  public static async getChildren(taskId: string, depthLevel?: number) {
+  public static async getChildren(taskId: string, depthLevel?: number, dateFilter: string = config.CURRENT_DATE_VALUE) {
 
     if (depthLevel) {
       const taskWithChildren = await taskModel.aggregate([
         {
           $match: {
             _id: new Types.ObjectId(taskId),
+            date: dateFilter,
           },
         },
         {
@@ -109,8 +112,7 @@ export class TaskRepository {
     }
 
     return (
-      await taskModel.find({ ancestors: taskId }).populate(TaskRepository.populationFields).exec()
+      await taskModel.find({ ancestors: taskId, date: dateFilter }).populate(TaskRepository.populationFields).exec()
     );
   }
-
 }
