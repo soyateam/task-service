@@ -16,14 +16,24 @@ export class TaskRepository {
    * @param taskId - The id of the task
    */
   public static getById(taskId: string, dateFilter: string = config.CURRENT_DATE_VALUE) {
-    return taskModel.findOne({ _id: taskId, date: dateFilter }).populate(TaskRepository.populationFields).exec();
+    return taskModel.findOne({ _id: taskId, date: dateFilter })
+                    .populate({
+                      path: TaskRepository.populationFields,
+                      match: { date: dateFilter },
+                    })
+                    .exec();
   }
 
   /**
    * Get all tasks.
    */
   public static getAll(dateFilter: string = config.CURRENT_DATE_VALUE): any {
-    return taskModel.find({ date: dateFilter }).populate(TaskRepository.populationFields).exec();
+    return taskModel.find({ date: dateFilter })
+                    .populate({
+                      path: TaskRepository.populationFields,
+                      match: { date: dateFilter },
+                    })
+                    .exec();
   }
 
   /**
@@ -50,7 +60,12 @@ export class TaskRepository {
    * @param parentId - ObjectID of the parent task.
    */
   public static getByParentId(parentId: string, dateFilter: string = config.CURRENT_DATE_VALUE) {
-    return taskModel.find({ parent: parentId === 'null' ? null : parentId, date: dateFilter }).populate('subTasksCount').exec();
+    return taskModel.find({ parent: parentId === 'null' ? null : parentId, date: dateFilter })
+                    .populate({
+                      path: 'subTasksCount',
+                      match: { date: dateFilter },
+                    })
+                    .exec();
   }
 
   /**
@@ -70,7 +85,10 @@ export class TaskRepository {
       { _id: taskProperties._id, date: config.CURRENT_DATE_VALUE },
       { $set: sanitizedProperties },
       { new: true },
-    ).populate(TaskRepository.populationFields).exec();
+    ).populate({
+      path: TaskRepository.populationFields,
+      match: { date: config.CURRENT_DATE_VALUE },
+    }).exec();
   }
 
   /**
@@ -78,14 +96,20 @@ export class TaskRepository {
    * @param type - Task type.
    */
   public static getRootsByType(type: TaskType, dateFilter: string = config.CURRENT_DATE_VALUE) {
-    return taskModel.find({ type, parent: null, date: dateFilter }).populate(TaskRepository.populationFields).exec();
+    return taskModel.find({ type, parent: null, date: dateFilter })
+                    .populate({
+                      path: TaskRepository.populationFields,
+                      match: { date: dateFilter },
+                    }).exec();
   }
 
   /**
    * Get all children for a given task by id (direct and indirect children)
    * @param taskId - The id of the task parent.
    */
-  public static async getChildren(taskId: string, depthLevel?: number, dateFilter: string = config.CURRENT_DATE_VALUE) {
+  public static async getChildren(
+    taskId: string, depthLevel?: number, dateFilter: string = config.CURRENT_DATE_VALUE,
+  ) {
 
     if (depthLevel) {
       const taskWithChildren = await taskModel.aggregate([
@@ -112,7 +136,11 @@ export class TaskRepository {
     }
 
     return (
-      await taskModel.find({ ancestors: taskId, date: dateFilter }).populate(TaskRepository.populationFields).exec()
+      await taskModel.find({ ancestors: taskId, date: dateFilter })
+                     .populate({
+                       path: TaskRepository.populationFields,
+                       match: { date: dateFilter },
+                     }).exec()
     );
   }
 }
