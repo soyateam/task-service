@@ -58,7 +58,7 @@ export class TaskRouter {
    */
   private static async getTaskById(req: Request, res: Response) {
     const taskId = req.params.taskId;
-    const dateFilter = req.query.date as string || config.CURRENT_DATE_VALUE;
+    const dateFilter = req.query.date as string;
 
     // If the request contains the id of the task
     if (taskId) {
@@ -76,7 +76,7 @@ export class TaskRouter {
    */
   private static async getRootTasksByType(req: Request, res: Response) {
     const type = req.params.type as string;
-    const dateFilter = req.query.date as string || config.CURRENT_DATE_VALUE;
+    const dateFilter = req.query.date as string;
 
     // If the type given is valid
     if (type && TaskValidator.isTypeValid(type)) {
@@ -95,7 +95,7 @@ export class TaskRouter {
    */
   private static async getTasksByParentId(req: Request, res: Response) {
     const parentId = req.params.parentId;
-    const dateFilter = req.query.date as string || config.CURRENT_DATE_VALUE;
+    const dateFilter = req.query.date as string;
 
     // If the request contains the parent id of the tasks
     if (parentId) {
@@ -113,7 +113,7 @@ export class TaskRouter {
    */
   private static async getTaskChildren(req: Request, res: Response) {
     const taskId = req.params.taskId;
-    const dateFilter = req.query.date as string || config.CURRENT_DATE_VALUE;
+    const dateFilter = req.query.date as string;
 
     // If the request contains the task id
     if (taskId) {
@@ -133,7 +133,7 @@ export class TaskRouter {
   private static async getTasksChildrenByDepthLevel(req: Request, res: Response) {
     const taskId = req.params.taskId;
     const depthLevel = parseInt(req.params.depthLevel, 10);
-    const dateFilter = req.query.date as string || config.CURRENT_DATE_VALUE;
+    const dateFilter = req.query.date as string;
 
     // If the request contains the task id
     if (taskId) {

@@ -3,37 +3,55 @@
 import { Types } from 'mongoose';
 
 import { TaskType, ITask } from './task.interface';
+// tslint:disable-next-line: import-name
 import TaskUtils from './task.utils';
 import taskModel from './task.model';
-import config from '../config';
+// tslint:disable-next-line: import-name
+import DateDumpModel from '../utils/dateDumpModel';
 
 export class TaskRepository {
 
   private static populationFields = 'subTasksCount';
 
+  public static getModelByDate(dateFilter: string) {
+    return DateDumpModel.getModelByDate(taskModel, dateFilter);
+  }
+
   /**
    * Get task by id.
    * @param taskId - The id of the task
    */
-  public static getById(taskId: string, dateFilter: string = config.CURRENT_DATE_VALUE) {
-    return taskModel.findOne({ _id: taskId, date: dateFilter })
-                    .populate({
-                      path: TaskRepository.populationFields,
-                      match: { date: dateFilter },
-                    })
-                    .exec();
+  public static getById(taskId: string, dateFilter?: string) {
+
+    if (dateFilter) {
+      return TaskRepository.getModelByDate(dateFilter)
+        .findOne({ _id: taskId })
+        .populate(TaskRepository.populationFields)
+        .exec();
+    }
+
+    return taskModel
+      .findOne({ _id: taskId })
+      .populate(TaskRepository.populationFields)
+      .exec();
   }
 
   /**
    * Get all tasks.
    */
-  public static getAll(dateFilter: string = config.CURRENT_DATE_VALUE): any {
-    return taskModel.find({ date: dateFilter })
-                    .populate({
-                      path: TaskRepository.populationFields,
-                      match: { date: dateFilter },
-                    })
-                    .exec();
+  public static getAll(dateFilter?: string): any {
+
+    if (dateFilter) {
+      return TaskRepository.getModelByDate(dateFilter)
+        .find()
+        .populate(TaskRepository.populationFields)
+        .exec();
+    }
+
+    return taskModel
+      .find()
+      .populate(TaskRepository.populationFields)
+      .exec();
   }
 
   /**
@@ -41,8 +59,7 @@ export class TaskRepository {
    * @param modelProperties - Properties of the model.
    */
   public static create(modelProperties: any) {
-    const dateFilter = config.CURRENT_DATE_VALUE;
-    return taskModel.create({ ...modelProperties, date: dateFilter });
+    return taskModel.create({ ...modelProperties });
   }
 
   /**
@@ -59,13 +76,19 @@ export class TaskRepository {
    * Get tasks by parent task id.
    * @param parentId - ObjectID of the parent task.
    */
-  public static getByParentId(parentId: string, dateFilter: string = config.CURRENT_DATE_VALUE) {
-    return taskModel.find({ parent: parentId === 'null' ? null : parentId, date: dateFilter })
-                    .populate({
-                      path: 'subTasksCount',
-                      match: { date: dateFilter },
-                    })
-                    .exec();
+  public static getByParentId(parentId: string, dateFilter?: string) {
+
+    if (dateFilter) {
+      return TaskRepository.getModelByDate(dateFilter)
+        .find({ parent: parentId === 'null' ? null : parentId })
+        .populate('subTasksCount')
+        .exec();
+    }
+
+    return taskModel
+      .find({ parent: parentId === 'null' ? null : parentId })
+      .populate('subTasksCount')
+      .exec();
   }
 
   /**
@@ -82,25 +105,29 @@ export class TaskRepository {
     };
 
     return taskModel.findOneAndUpdate(
-      { _id: taskProperties._id, date: config.CURRENT_DATE_VALUE },
+      { _id: taskProperties._id },
       { $set: sanitizedProperties },
       { new: true },
-    ).populate({
-      path: TaskRepository.populationFields,
-      match: { date: config.CURRENT_DATE_VALUE },
-    }).exec();
+    ).populate(TaskRepository.populationFields)
+      .exec();
   }
 
   /**
    * Get root parents by task type
    * @param type - Task type.
    */
-  public static getRootsByType(type: TaskType, dateFilter: string = config.CURRENT_DATE_VALUE) {
-    return taskModel.find({ type, parent: null, date: dateFilter })
-                    .populate({
-                      path: TaskRepository.populationFields,
-                      match: { date: dateFilter },
-                    }).exec();
+  public static getRootsByType(type: TaskType, dateFilter?: string) {
+
+    if (dateFilter) {
+      return TaskRepository.getModelByDate(dateFilter)
+        .find({ type, parent: null })
+        .populate(TaskRepository.populationFields)
+        .exec();
+    }
+    return taskModel
+      .find({ type, parent: null })
+      .populate(TaskRepository.populationFields)
+      .exec();
   }
 
   /**
@@ -108,15 +135,15 @@ export class TaskRepository {
    * @param taskId - The id of the task parent.
    */
   public static async getChildren(
-    taskId: string, depthLevel?: number, dateFilter: string = config.CURRENT_DATE_VALUE,
+    taskId: string, depthLevel?: number, dateFilter?: string,
   ) {
+    const currentModel = dateFilter ? TaskRepository.getModelByDate(dateFilter) : taskModel;
 
     if (depthLevel) {
-      const taskWithChildren = await taskModel.aggregate([
+      const taskWithChildren = await currentModel.aggregate([
         {
           $match: {
             _id: new Types.ObjectId(taskId),
-            date: dateFilter,
           },
         },
         {
@@ -136,11 +163,10 @@ export class TaskRepository {
     }
 
     return (
-      await taskModel.find({ ancestors: taskId, date: dateFilter })
-                     .populate({
-                       path: TaskRepository.populationFields,
-                       match: { date: dateFilter },
-                     }).exec()
+      await currentModel
+        .find({ ancestors: taskId })
+        .populate(TaskRepository.populationFields)
+        .exec()
     );
   }
 }

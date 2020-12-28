@@ -5,7 +5,6 @@ import { ITask, TaskType } from './task.interface';
 import { InvalidParentTask } from './task.error';
 import config from '../config';
 
-
 export class TaskController {
   /**
    * Create a task
@@ -48,7 +47,7 @@ export class TaskController {
    * Get root parent tasks by task type
    * @param type - Task type.
    */
-  static async getRootTasksByType(type: TaskType, dateFilter: string = config.CURRENT_DATE_VALUE) {
+  static async getRootTasksByType(type: TaskType, dateFilter?: string) {
     return await TaskRepository.getRootsByType(type, dateFilter);
   }
 
@@ -56,7 +55,7 @@ export class TaskController {
    * Get task by ObjectID
    * @param taskId - ObjectID of the task requested.
    */
-  static async getTaskById(taskId: string, dateFilter: string = config.CURRENT_DATE_VALUE) {
+  static async getTaskById(taskId: string, dateFilter?: string) {
     return await TaskRepository.getById(taskId, dateFilter);
   }
 
@@ -64,7 +63,7 @@ export class TaskController {
    * Get tasks by their parent id.
    * @param parentId - Parent Task id
    */
-  static async getTasksByParentId(parentId: string, dateFilter: string = config.CURRENT_DATE_VALUE) {
+  static async getTasksByParentId(parentId: string, dateFilter?: string) {
     return await TaskRepository.getByParentId(parentId, dateFilter);
   }
 
@@ -72,7 +71,7 @@ export class TaskController {
    * Get task direct and indirect children
    * @param taskId - Parent Task id
    */
-  static async getTaskChildren(taskId: string, depth?: number, dateFilter: string = config.CURRENT_DATE_VALUE) {
+  static async getTaskChildren(taskId: string, depth?: number, dateFilter?: string) {
     return await TaskRepository.getChildren(taskId, depth, dateFilter);
   }
 

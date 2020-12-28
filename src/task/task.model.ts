@@ -3,7 +3,6 @@
 import { Schema, model } from 'mongoose';
 import { ITask, collectionName, TaskType } from './task.interface';
 import { TaskValidator } from './task.validator';
-import config from '../config';
 
 const taskSchema = new Schema(
   {
@@ -45,10 +44,6 @@ const taskSchema = new Schema(
         message: 'Ancestors has incorrect reference',
       },
     },
-    date: {
-      type: String,
-      default: config.CURRENT_DATE_VALUE,
-    }
   },
   {
     timestamps: true,
