@@ -20,6 +20,12 @@ export class TaskRouter {
   };
 
   public static getRouter() {
+
+    TaskRouter.router.get(
+      `/${config.TASK_DATES_ENDPOINT}`,
+      Wrapper.wrapAsync(TaskRouter.getDateFilters)
+    );
+
     TaskRouter.router.get(
       `/${config.TASK_PARENT_ENDPOINT}/:parentId`,
       Wrapper.wrapAsync(TaskRouter.getTasksByParentId),
@@ -49,6 +55,15 @@ export class TaskRouter {
     TaskRouter.router.delete('/:taskId', Wrapper.wrapAsync(TaskRouter.deleteTaskById));
 
     return TaskRouter.router;
+  }
+
+  /**
+   * Get date filters for the whole tasks available.
+   * @param req - Express Request Object.
+   * @param res - Express Response Object.
+   */
+  private static async getDateFilters(req: Request, res: Response) {
+    return res.status(200).send(await TaskController.getDateFilters());
   }
 
   /**

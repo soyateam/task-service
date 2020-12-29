@@ -3,7 +3,6 @@
 import { TaskRepository } from './task.repository';
 import { ITask, TaskType } from './task.interface';
 import { InvalidParentTask } from './task.error';
-import config from '../config';
 
 export class TaskController {
   /**
@@ -81,5 +80,12 @@ export class TaskController {
    */
   static async deleteTaskById(taskId: string) {
     return await TaskRepository.deleteById(taskId);
+  }
+
+  /**
+   * Get available date filters for tasks.
+   */
+  static async getDateFilters() {
+    return await TaskRepository.getDateFilters();
   }
 }

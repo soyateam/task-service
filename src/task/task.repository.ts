@@ -2,7 +2,7 @@
 
 import { Types } from 'mongoose';
 
-import { TaskType, ITask } from './task.interface';
+import { TaskType, ITask, collectionName } from './task.interface';
 // tslint:disable-next-line: import-name
 import TaskUtils from './task.utils';
 import taskModel from './task.model';
@@ -168,5 +168,12 @@ export class TaskRepository {
         .populate(TaskRepository.populationFields)
         .exec()
     );
+  }
+
+  /**
+   * Get available date filters for tasks.
+   */
+  static async getDateFilters() {
+    return await DateDumpModel.getAllDates(`${collectionName.toLowerCase()}s`);
   }
 }

@@ -17,6 +17,7 @@ const config = {
   TASK_PARENT_ENDPOINT: 'parent',
   TASK_TYPE_ENDPOINT: 'type',
   TASK_CHILDREN_ENDPOINT: 'children',
+  TASK_DATES_ENDPOINT: 'dates',
 
 };
 
