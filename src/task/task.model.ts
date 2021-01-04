@@ -44,6 +44,10 @@ const taskSchema = new Schema(
         message: 'Ancestors has incorrect reference',
       },
     },
+    sum: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

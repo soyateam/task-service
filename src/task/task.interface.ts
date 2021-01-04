@@ -19,6 +19,7 @@ export interface ITask extends IBaseModel {
   description: string; // Description of the task
   groups: IGroup[]; // Groups attached to task
   ancestors: string[]; // Ancestors of the tasks (the parent tasks above this task level)
+  sum: number; // Sum of the task groups (When the task is past task - The field in current task collection is considered not sync)
 }
 
 export const collectionName = 'Task';

@@ -59,6 +59,14 @@ export class TaskController {
   }
 
   /**
+   * Get task id from all dates available.
+   * @param taskId - The id of the task
+   */
+  static async getByIdAllDates(taskId: string) {
+    return await TaskRepository.getByIdAllDates(taskId);
+  }
+
+  /**
    * Get tasks by their parent id.
    * @param parentId - Parent Task id
    */

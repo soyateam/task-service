@@ -18,6 +18,21 @@ export class TaskRepository {
   }
 
   /**
+   * Get task id from all dates available.
+   * @param taskId - The id of the task
+   */
+  public static async getByIdAllDates(taskId: string) {
+    const results = [];
+    const dates = await TaskRepository.getDateFilters();
+
+    for (let date of dates) {
+      results.push(await TaskRepository.getById(taskId, date));
+    }
+
+    return results;
+  }
+
+  /**
    * Get task by id.
    * @param taskId - The id of the task
    */

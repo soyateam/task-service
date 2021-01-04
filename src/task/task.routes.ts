@@ -46,6 +46,11 @@ export class TaskRouter {
       Wrapper.wrapAsync(TaskRouter.getTaskChildren),
     );
 
+    TaskRouter.router.get(
+      `/:taskId/${config.TASK_DATES_ENDPOINT}`,
+      Wrapper.wrapAsync(TaskRouter.getTaskByIdAllDates)
+    );
+
     TaskRouter.router.get('/:taskId', Wrapper.wrapAsync(TaskRouter.getTaskById));
 
     TaskRouter.router.put('/', Wrapper.wrapAsync(TaskRouter.updateTask));
@@ -134,6 +139,24 @@ export class TaskRouter {
     if (taskId) {
       const childrenTasks = await TaskController.getTaskChildren(taskId, undefined, dateFilter);
       return res.status(200).send(childrenTasks);
+    }
+
+    // Task id is not given
+    throw new InvalidParameter(TaskRouter.errorMessages.MISSING_TASK_ID);
+  }
+
+  /**
+   * Get task by id for all dates available.
+   * @param req - Express Request Object.
+   * @param res - Express Response Object.
+   */
+  private static async getTaskByIdAllDates(req: Request, res: Response) {
+    const taskId = req.params.taskId;
+
+    // If the request contains the task id
+    if (taskId) {
+      const tasks = await TaskController.getByIdAllDates(taskId);
+      return res.status(200).send(tasks);
     }
 
     // Task id is not given
