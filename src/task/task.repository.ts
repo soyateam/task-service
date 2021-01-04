@@ -148,7 +148,7 @@ export class TaskRepository {
         },
         {
           $graphLookup: {
-            from: 'tasks',
+            from: currentModel.collection.collectionName,
             startWith: '$_id',
             connectFromField: '_id',
             connectToField: 'parent',
