@@ -26,7 +26,7 @@ export class TaskRepository {
     const dates = await TaskRepository.getDateFilters();
 
     for (let date of dates) {
-      results.push(await TaskRepository.getById(taskId, date));
+      results.push({ date, ...((await TaskRepository.getById(taskId, date)) || {} as any).toJSON() });
     }
 
     return results;
