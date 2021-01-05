@@ -12,6 +12,7 @@ import DateDumpModel from '../utils/dateDumpModel';
 export class TaskRepository {
 
   private static populationFields = 'subTasksCount';
+  private static MAX_DATE_LIMIT = 12;
 
   public static getModelByDate(dateFilter: string) {
     return DateDumpModel.getModelByDate(taskModel, dateFilter);
@@ -23,10 +24,12 @@ export class TaskRepository {
    */
   public static async getByIdAllDates(taskId: string) {
     const results = [];
-    const dates = await TaskRepository.getDateFilters();
+    const dates = (await TaskRepository.getDateFilters());
+    dates.sort((a: any, b: any) => (a < b) ? -1 : (a > b) ? 1 : 0);
+    const minLength = Math.min(dates.length, TaskRepository.MAX_DATE_LIMIT);
 
-    for (let date of dates) {
-      results.push({ date, ...((await TaskRepository.getById(taskId, date)) || {} as any).toJSON() });
+    for (let index = 0; index < minLength; index += 1) {
+      results.push({ date: dates[index], ...((await TaskRepository.getById(taskId, dates[index])) || {} as any).toJSON() });
     }
 
     return results;
