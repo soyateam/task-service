@@ -20,8 +20,12 @@ export default class TaskUtils {
   }
 
   private static createTreeInternal(data: any, currId: any) {
-    const childs = data.children.filter((val: any) => val.parent.toString() === currId.toString());
-    const currObj = data.children.filter((val: any) => val._id.toString() === currId.toString())[0];
+    const childs = data.children.filter((val: any) => {
+      return val.parent !== null && val.parent.toString() === currId.toString()
+    });
+    const currObj = data.children.filter((val: any) => {
+      return val._id.toString() === currId.toString();
+    })[0];
     if (childs.length === 0) {
       return {
         ...currObj,
