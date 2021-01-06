@@ -29,7 +29,11 @@ export class TaskRepository {
     const minLength = Math.min(dates.length, TaskRepository.MAX_DATE_LIMIT);
 
     for (let index = 0; index < minLength; index += 1) {
-      results.push({ date: dates[index], ...((await TaskRepository.getById(taskId, dates[index])) || {} as any).toJSON() });
+      let taskDate: any = (await TaskRepository.getById(taskId, dates[index]));
+      if (taskDate) {
+        taskDate = taskDate.toJSON();
+        results.push({ date: dates[index], ...taskDate });
+      }
     }
 
     return results;
