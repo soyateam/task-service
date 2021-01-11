@@ -217,12 +217,28 @@ export class TaskRouter {
    */
   private static async updateTask(req: Request, res: Response) {
     const taskProperties = req.body.task;
+    const clickedGroupId = req.body.clickedGroupId;
 
     // If task properties to update is given
     if (taskProperties) {
 
+      let task = taskProperties;
+
+      // If need to change clicked group
+      if (clickedGroupId) {
+        if (taskProperties._id) {
+          task = await TaskController.getTaskById(taskProperties._id);
+
+          for (let index = 0; index < task.groups.length; index += 1) {
+            if (task.groups[index].id === clickedGroupId) {
+              task.groups[index].isClicked = true;
+            }
+          }
+        }        
+      }
+
       // Update the task with the given properites
-      const updatedTask = await TaskController.updateTask(taskProperties);
+      const updatedTask = await TaskController.updateTask(task);
       return res.status(200).send(updatedTask);
     }
 
